@@ -7,6 +7,7 @@ import {
   FlatList,
   TouchableOpacity,
   Platform,
+  Alert,
 } from 'react-native';
 
 import todayImage from '../../assets/imgs/today.jpg';
@@ -79,6 +80,21 @@ export default class TaskList extends Component {
     this.setState({visibleTasks});
   };
 
+  addTask = newTask => {
+    if (!newTask.desc || !newTask.desc.trim()) {
+      Alert.alert('Invalid Data', 'Description is required');
+      return;
+    }
+    const tasks = [...this.state.tasks];
+    tasks.push({
+      id: Math.random(),
+      desc: newTask.desc,
+      estimateAt: newTask.date,
+      doneAt: null,
+    });
+    this.setState({tasks, showAddTask: false}, this.filterTasks); // update the list, close the modal add callback to update list after state change
+  };
+
   render() {
     const today = moment().locale('en-US').format('ddd, D MMMM');
 
@@ -87,6 +103,7 @@ export default class TaskList extends Component {
         <AddTask
           isVisible={this.state.showAddTask}
           onCancel={this.toggleAddTask}
+          onSave={this.addTask}
         />
         <ImageBackground source={todayImage} style={styles.background}>
           <View style={styles.iconBar}>
