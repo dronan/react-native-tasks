@@ -21,6 +21,7 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 export default class TaskList extends Component {
   state = {
     showDoneTasks: true,
+    visibleTasks: [],
     tasks: [
       {
         id: Math.random(),
@@ -43,8 +44,12 @@ export default class TaskList extends Component {
     ],
   };
 
+  componentDidMount = () => {
+    this.filterTasks();
+  };
+
   toggleFilter = () => {
-    this.setState({showDoneTasks: !this.state.showDoneTasks});
+    this.setState({showDoneTasks: !this.state.showDoneTasks}, this.filterTasks); // add callback to update list after state change
   };
 
   toggleTask = taskId => {
@@ -54,7 +59,18 @@ export default class TaskList extends Component {
         task.doneAt = task.doneAt ? null : new Date();
       }
     });
-    this.setState({tasks});
+    this.setState({tasks}, this.filterTasks); // add callback to update list after state change
+  };
+
+  filterTasks = () => {
+    let visibleTasks = null;
+    if (this.state.showDoneTasks) {
+      visibleTasks = [...this.state.tasks];
+    } else {
+      const pending = task => task.doneAt === null;
+      visibleTasks = this.state.tasks.filter(pending);
+    }
+    this.setState({visibleTasks});
   };
 
   render() {
@@ -79,7 +95,7 @@ export default class TaskList extends Component {
         </ImageBackground>
         <View style={styles.taskList}>
           <FlatList
-            data={this.state.tasks}
+            data={this.state.visibleTasks}
             keyExtractor={item => `${item.id}`}
             renderItem={({item}) => (
               <Task {...item} toggleTask={this.toggleTask} />
