@@ -2,17 +2,22 @@ import React from 'react';
 import {View, Text, StyleSheet} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import commonStyles from '../commonStyles';
+import moment from 'moment';
 
 export default props => {
   const doneOrNotStyle =
     props.doneAt !== null ? {textDecorationLine: 'line-through'} : {};
+
+  const formattedDate = moment(props.doneAt || props.estimateAt)
+    .locale('en-US')
+    .format('ddd, D MMMM');
 
   return (
     <View style={styles.container}>
       <View style={styles.checkContainer}>{getCheckView(props.doneAt)}</View>
       <View>
         <Text style={[styles.desc, doneOrNotStyle]}>{props.desc}</Text>
-        <Text style={styles.x}>{props.estimateAt + ''}</Text>
+        <Text style={styles.date}>{formattedDate}</Text>
       </View>
     </View>
   );
@@ -62,6 +67,11 @@ const styles = StyleSheet.create({
   desc: {
     fontFamily: commonStyles.fontFamily,
     color: commonStyles.colors.mainText,
+    fontSize: 15,
+  },
+  date: {
+    fontFamily: commonStyles.fontFamily,
+    color: commonStyles.colors.subText,
     fontSize: 15,
   },
 });
