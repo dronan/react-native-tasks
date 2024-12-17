@@ -1,8 +1,16 @@
 import React from 'react';
-import {View, Text, StyleSheet, TouchableWithoutFeedback} from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableWithoutFeedback,
+  TouchableOpacity,
+} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import commonStyles from '../commonStyles';
 import moment from 'moment';
+import Swipeable from 'react-native-gesture-handler/Swipeable';
+import {GestureHandlerRootView} from 'react-native-gesture-handler';
 
 export default props => {
   const doneOrNotStyle =
@@ -12,16 +20,30 @@ export default props => {
     .locale('en-US')
     .format('ddd, D MMMM');
 
+  const getRightContent = () => {
+    return (
+      <TouchableOpacity style={styles.right}>
+        <Icon name="trash" size={20} color="#FFF" />
+      </TouchableOpacity>
+    );
+  };
+
   return (
-    <View style={styles.container}>
-      <TouchableWithoutFeedback onPress={() => props.toggleTask(props.id)}>
-        <View style={styles.checkContainer}>{getCheckView(props.doneAt)}</View>
-      </TouchableWithoutFeedback>
-      <View>
-        <Text style={[styles.desc, doneOrNotStyle]}>{props.desc}</Text>
-        <Text style={styles.date}>{formattedDate}</Text>
-      </View>
-    </View>
+    <GestureHandlerRootView style={{flex: 1}}>
+      <Swipeable renderRightActions={getRightContent}>
+        <View style={styles.container}>
+          <TouchableWithoutFeedback onPress={() => props.toggleTask(props.id)}>
+            <View style={styles.checkContainer}>
+              {getCheckView(props.doneAt)}
+            </View>
+          </TouchableWithoutFeedback>
+          <View>
+            <Text style={[styles.desc, doneOrNotStyle]}>{props.desc}</Text>
+            <Text style={styles.date}>{formattedDate}</Text>
+          </View>
+        </View>
+      </Swipeable>
+    </GestureHandlerRootView>
   );
 };
 
@@ -75,5 +97,12 @@ const styles = StyleSheet.create({
     fontFamily: commonStyles.fontFamily,
     color: commonStyles.colors.subText,
     fontSize: 15,
+  },
+  right: {
+    backgroundColor: '#B13B44',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+    paddingHorizontal: 20,
   },
 });
