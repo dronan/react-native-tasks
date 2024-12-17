@@ -23,7 +23,7 @@ export default class TaskList extends Component {
   state = {
     showDoneTasks: true,
     visibleTasks: [],
-    showAddTask: true,
+    showAddTask: false,
     tasks: [
       {
         id: Math.random(),
@@ -112,6 +112,12 @@ export default class TaskList extends Component {
             )}
           />
         </View>
+        <TouchableOpacity
+          style={styles.addButton}
+          activeOpacity={0.7}
+          onPress={this.toggleAddTask}>
+          <Icon name="plus" size={20} color={commonStyles.colors.secondary} />
+        </TouchableOpacity>
       </View>
     );
   }
@@ -150,5 +156,16 @@ const styles = StyleSheet.create({
     marginHorizontal: 20,
     flexDirection: 'row',
     justifyContent: 'flex-end',
+  },
+  addButton: {
+    position: 'absolute',
+    right: 30,
+    bottom: 30,
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    backgroundColor: commonStyles.colors.today,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
