@@ -18,10 +18,12 @@ import Task from '../components/Task';
 
 import Icon from 'react-native-vector-icons/FontAwesome';
 
+import AddTask from './AddTask';
 export default class TaskList extends Component {
   state = {
     showDoneTasks: true,
     visibleTasks: [],
+    showAddTask: true,
     tasks: [
       {
         id: Math.random(),
@@ -46,6 +48,10 @@ export default class TaskList extends Component {
 
   componentDidMount = () => {
     this.filterTasks();
+  };
+
+  toggleAddTask = () => {
+    this.setState({showAddTask: !this.state.showAddTask});
   };
 
   toggleFilter = () => {
@@ -78,6 +84,10 @@ export default class TaskList extends Component {
 
     return (
       <View style={styles.container}>
+        <AddTask
+          isVisible={this.state.showAddTask}
+          onCancel={this.toggleAddTask}
+        />
         <ImageBackground source={todayImage} style={styles.background}>
           <View style={styles.iconBar}>
             <TouchableOpacity onPress={this.toggleFilter}>
