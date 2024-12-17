@@ -1,16 +1,11 @@
 import React from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableWithoutFeedback,
-  TouchableOpacity,
-} from 'react-native';
+import {View, Text, StyleSheet, TouchableWithoutFeedback} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import commonStyles from '../commonStyles';
 import moment from 'moment';
-import Swipeable from 'react-native-gesture-handler/Swipeable';
+import ReanimatedSwipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
+import Reanimated, {useAnimatedStyle} from 'react-native-reanimated';
 
 export default props => {
   const doneOrNotStyle =
@@ -20,29 +15,39 @@ export default props => {
     .locale('en-US')
     .format('ddd, D MMMM');
 
-  const getRightContent = () => {
+  const getRightContent = (prog, drag) => {
+    const styleAnimation = useAnimatedStyle(() => {
+      return {
+        transform: [{translateX: drag.value + 50}],
+      };
+    });
+
     return (
-      <TouchableOpacity style={styles.right}>
-        <Icon name="trash" size={20} color="#FFF" />
-      </TouchableOpacity>
+      <Reanimated.View style={styleAnimation}>
+        <Icon name="trash" size={20} style={styles.right} color="#FFF" />
+      </Reanimated.View>
     );
   };
 
   return (
-    <GestureHandlerRootView style={{flex: 1}}>
-      <Swipeable renderRightActions={getRightContent}>
-        <View style={styles.container}>
+    <GestureHandlerRootView>
+      <ReanimatedSwipeable
+        friction={2}
+        enableTrackpadTwoFingerGesture
+        rightThreshold={40}
+        renderRightActions={getRightContent}>
+        <View style={styles.contentContainer}>
           <TouchableWithoutFeedback onPress={() => props.toggleTask(props.id)}>
             <View style={styles.checkContainer}>
               {getCheckView(props.doneAt)}
             </View>
           </TouchableWithoutFeedback>
-          <View>
+          <View style={styles.line}>
             <Text style={[styles.desc, doneOrNotStyle]}>{props.desc}</Text>
             <Text style={styles.date}>{formattedDate}</Text>
           </View>
         </View>
-      </Swipeable>
+      </ReanimatedSwipeable>
     </GestureHandlerRootView>
   );
 };
@@ -60,16 +65,18 @@ function getCheckView(doneAt) {
 }
 
 const styles = StyleSheet.create({
-  container: {
+  contentContainer: {
     flexDirection: 'row',
-    borderColor: '#AAA',
     borderBottomWidth: 1,
-    alignItems: 'center',
+    borderBottomColor: '#AAA',
+  },
+  line: {
+    width: '100%',
     paddingVertical: 10,
-    backgroundColor: '#FFF',
+    marginLeft: 10,
   },
   checkContainer: {
-    width: '20%',
+    width: 40,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -96,13 +103,12 @@ const styles = StyleSheet.create({
   date: {
     fontFamily: commonStyles.fontFamily,
     color: commonStyles.colors.subText,
-    fontSize: 15,
+    fontSize: 12,
   },
   right: {
     backgroundColor: '#B13B44',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'flex-end',
-    paddingHorizontal: 20,
+    paddingTop: 15,
+    paddingHorizontal: 15,
+    height: '100%',
   },
 });
