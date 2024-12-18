@@ -23,8 +23,17 @@ export default props => {
     });
 
     return (
-      <Reanimated.View style={styleAnimation}>
-        <Icon name="trash" size={20} style={styles.right} color="#FFF" />
+      <Reanimated.View style={[styleAnimation, styles.rightOptions]}>
+        <Icon name="trash" style={styles.iconSpace} size={20} color="#FFF" />
+      </Reanimated.View>
+    );
+  };
+
+  const getLeftContent = () => {
+    return (
+      <Reanimated.View style={styles.leftOptions}>
+        <Icon name="trash" style={styles.iconSpace} size={20} color="#FFF" />
+        <Text style={styles.excludeText}>Delete</Text>
       </Reanimated.View>
     );
   };
@@ -32,10 +41,10 @@ export default props => {
   return (
     <GestureHandlerRootView>
       <ReanimatedSwipeable
-        friction={2}
-        enableTrackpadTwoFingerGesture
-        rightThreshold={40}
-        renderRightActions={getRightContent}>
+        containerStyle={styles.swipeableContainer}
+        overshootRight={false}
+        renderRightActions={(prog, drag) => getRightContent(prog, drag)}
+        renderLeftActions={getLeftContent}>
         <View style={styles.contentContainer}>
           <TouchableWithoutFeedback onPress={() => props.toggleTask(props.id)}>
             <View style={styles.checkContainer}>
@@ -69,6 +78,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     borderBottomWidth: 1,
     borderBottomColor: '#AAA',
+    backgroundColor: '#FFF',
   },
   line: {
     width: '100%',
@@ -105,10 +115,26 @@ const styles = StyleSheet.create({
     color: commonStyles.colors.subText,
     fontSize: 12,
   },
-  right: {
-    backgroundColor: '#B13B44',
-    paddingTop: 15,
+  iconSpace: {
     paddingHorizontal: 15,
-    height: '100%',
+  },
+  excludeText: {
+    fontFamily: commonStyles.fontFamily,
+    color: '#FFF',
+    fontSize: 20,
+    margin: 10,
+  },
+  rightOptions: {
+    flexDirection: 'row',
+    backgroundColor: '#B13B44',
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+  },
+  leftOptions: {
+    flex: 1,
+    flexDirection: 'row',
+    backgroundColor: '#B13B44',
+    justifyContent: 'flex-start',
+    alignItems: 'center',
   },
 });
