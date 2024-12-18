@@ -1,5 +1,11 @@
 import React from 'react';
-import {View, Text, StyleSheet, TouchableWithoutFeedback} from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableWithoutFeedback,
+  TouchableOpacity,
+} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import commonStyles from '../commonStyles';
 import moment from 'moment';
@@ -24,7 +30,10 @@ export default props => {
 
     return (
       <Reanimated.View style={[styleAnimation, styles.rightOptions]}>
-        <Icon name="trash" style={styles.iconSpace} size={20} color="#FFF" />
+        <TouchableOpacity
+          onPress={() => props.onDelete && props.onDelete(props.id)}>
+          <Icon name="trash" style={styles.iconSpace} size={20} color="#FFF" />
+        </TouchableOpacity>
       </Reanimated.View>
     );
   };
@@ -43,10 +52,14 @@ export default props => {
       <ReanimatedSwipeable
         containerStyle={styles.swipeableContainer}
         overshootRight={false}
+        onSwipeableOpen={direction =>
+          direction == 'right' && props.onDelete && props.onDelete(props.id)
+        }
         renderRightActions={(prog, drag) => getRightContent(prog, drag)}
         renderLeftActions={getLeftContent}>
         <View style={styles.contentContainer}>
-          <TouchableWithoutFeedback onPress={() => props.toggleTask(props.id)}>
+          <TouchableWithoutFeedback
+            onPress={() => props.onToggleTask(props.id)}>
             <View style={styles.checkContainer}>
               {getCheckView(props.doneAt)}
             </View>

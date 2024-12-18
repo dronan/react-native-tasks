@@ -95,6 +95,12 @@ export default class TaskList extends Component {
     this.setState({tasks, showAddTask: false}, this.filterTasks); // update the list, close the modal add callback to update list after state change
   };
 
+  deleteTask = id => {
+    console.log('deleteTask', id);
+    const tasks = this.state.tasks.filter(task => task.id !== id);
+    this.setState({tasks}, this.filterTasks); // update the list, add callback to update list after state change
+  };
+
   render() {
     const today = moment().locale('en-US').format('ddd, D MMMM');
 
@@ -125,7 +131,11 @@ export default class TaskList extends Component {
             data={this.state.visibleTasks}
             keyExtractor={item => `${item.id}`}
             renderItem={({item}) => (
-              <Task {...item} toggleTask={this.toggleTask} />
+              <Task
+                {...item}
+                onDelete={this.deleteTask}
+                onToggleTask={this.toggleTask}
+              />
             )}
           />
         </View>
