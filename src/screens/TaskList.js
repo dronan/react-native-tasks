@@ -20,35 +20,24 @@ import Task from '../components/Task';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
 import AddTask from './AddTask';
+
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+const initialState = {
+  showDoneTasks: true,
+  visibleTasks: [],
+  showAddTask: false,
+  tasks: [],
+};
 export default class TaskList extends Component {
   state = {
-    showDoneTasks: true,
-    visibleTasks: [],
-    showAddTask: false,
-    tasks: [
-      {
-        id: Math.random(),
-        desc: 'Buy a book',
-        estimateAt: new Date(),
-        doneAt: new Date(),
-      },
-      {
-        id: Math.random(),
-        desc: 'Read a book',
-        estimateAt: new Date(),
-        doneAt: null,
-      },
-      {
-        id: Math.random(),
-        desc: 'Write a book',
-        estimateAt: new Date(),
-        doneAt: null,
-      },
-    ],
+    ...initialState,
   };
 
-  componentDidMount = () => {
-    this.filterTasks();
+  componentDidMount = async () => {
+    const stateString = await AsyncStorage.getItem('taskState');
+    const state = JSON.parse(stateString) || this.state;
+    this.setState(state, this.filterTasks);
   };
 
   toggleAddTask = () => {
@@ -78,6 +67,7 @@ export default class TaskList extends Component {
       visibleTasks = this.state.tasks.filter(pending);
     }
     this.setState({visibleTasks});
+    AsyncStorage.setItem('taskState', JSON.stringify(this.state));
   };
 
   addTask = newTask => {
