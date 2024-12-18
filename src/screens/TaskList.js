@@ -49,7 +49,7 @@ export default class TaskList extends Component {
   };
 
   toggleFilter = () => {
-    this.setState({showDoneTasks: !this.state.showDoneTasks}, this.filterTasks); // add callback to update list after state change
+    this.setState({showDoneTasks: !this.state.showDoneTasks}, this.filterTasks);
   };
 
   toggleTask = taskId => {
@@ -70,6 +70,7 @@ export default class TaskList extends Component {
       const pending = task => task.doneAt === null;
       visibleTasks = this.state.tasks.filter(pending);
     }
+
     this.setState({visibleTasks});
     AsyncStorage.setItem(
       'tasksState',
@@ -133,6 +134,7 @@ export default class TaskList extends Component {
             renderItem={({item}) => (
               <Task
                 {...item}
+                addTaskOpen={this.state.showAddTask}
                 onDelete={this.deleteTask}
                 onToggleTask={this.toggleTask}
               />
