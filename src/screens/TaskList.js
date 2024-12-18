@@ -9,7 +9,7 @@ import {
   Platform,
   Alert,
 } from 'react-native';
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import todayImage from '../../assets/imgs/today.jpg';
 import commonStyles from '../commonStyles';
 
@@ -20,13 +20,12 @@ import Task from '../components/Task';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
 import AddTask from './AddTask';
-
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import {GestureHandlerRootView} from 'react-native-gesture-handler';
 
 const initialState = {
   showDoneTasks: true,
-  visibleTasks: [],
   showAddTask: false,
+  visibleTasks: [],
   tasks: [],
 };
 export default class TaskList extends Component {
@@ -35,9 +34,14 @@ export default class TaskList extends Component {
   };
 
   componentDidMount = async () => {
-    const stateString = await AsyncStorage.getItem('taskState');
-    const state = JSON.parse(stateString) || this.state;
-    this.setState(state, this.filterTasks);
+    const stateString = await AsyncStorage.getItem('tasksState');
+    const savedState = JSON.parse(stateString) || initialState;
+    this.setState(
+      {
+        showDoneTasks: savedState.showDoneTasks,
+      },
+      this.filterTasks,
+    );
   };
 
   toggleAddTask = () => {
@@ -67,14 +71,21 @@ export default class TaskList extends Component {
       visibleTasks = this.state.tasks.filter(pending);
     }
     this.setState({visibleTasks});
-    AsyncStorage.setItem('taskState', JSON.stringify(this.state));
+    AsyncStorage.setItem(
+      'tasksState',
+      JSON.stringify({
+        showDoneTasks: this.state.showDoneTasks,
+      }),
+    );
   };
 
   addTask = newTask => {
+    // Check for valid description before adding task
     if (!newTask.desc || !newTask.desc.trim()) {
       Alert.alert('Invalid Data', 'Description is required');
       return;
     }
+
     const tasks = [...this.state.tasks];
     tasks.push({
       id: Math.random(),
@@ -82,7 +93,7 @@ export default class TaskList extends Component {
       estimateAt: newTask.date,
       doneAt: null,
     });
-    this.setState({tasks, showAddTask: false}, this.filterTasks); // update the list, close the modal add callback to update list after state change
+    this.setState({tasks, showAddTask: false}, this.filterTasks);
   };
 
   deleteTask = id => {
@@ -94,7 +105,7 @@ export default class TaskList extends Component {
     const today = moment().locale('en-US').format('ddd, D MMMM');
 
     return (
-      <View style={styles.container}>
+      <GestureHandlerRootView style={styles.container}>
         <AddTask
           isVisible={this.state.showAddTask}
           onCancel={this.toggleAddTask}
@@ -134,7 +145,7 @@ export default class TaskList extends Component {
           onPress={this.toggleAddTask}>
           <Icon name="plus" size={20} color={commonStyles.colors.secondary} />
         </TouchableOpacity>
-      </View>
+      </GestureHandlerRootView>
     );
   }
 }

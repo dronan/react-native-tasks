@@ -10,7 +10,6 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import commonStyles from '../commonStyles';
 import moment from 'moment';
 import ReanimatedSwipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
-import {GestureHandlerRootView} from 'react-native-gesture-handler';
 import Reanimated, {useAnimatedStyle} from 'react-native-reanimated';
 
 export default props => {
@@ -48,29 +47,26 @@ export default props => {
   };
 
   return (
-    <GestureHandlerRootView>
-      <ReanimatedSwipeable
-        containerStyle={styles.swipeableContainer}
-        overshootRight={false}
-        onSwipeableOpen={direction =>
-          direction == 'right' && props.onDelete && props.onDelete(props.id)
-        }
-        renderRightActions={(prog, drag) => getRightContent(prog, drag)}
-        renderLeftActions={getLeftContent}>
-        <View style={styles.contentContainer}>
-          <TouchableWithoutFeedback
-            onPress={() => props.onToggleTask(props.id)}>
-            <View style={styles.checkContainer}>
-              {getCheckView(props.doneAt)}
-            </View>
-          </TouchableWithoutFeedback>
-          <View style={styles.line}>
-            <Text style={[styles.desc, doneOrNotStyle]}>{props.desc}</Text>
-            <Text style={styles.date}>{formattedDate}</Text>
+    <ReanimatedSwipeable
+      containerStyle={styles.swipeableContainer}
+      overshootRight={false}
+      onSwipeableOpen={direction =>
+        direction == 'right' && props.onDelete && props.onDelete(props.id)
+      }
+      renderRightActions={(prog, drag) => getRightContent(prog, drag)}
+      renderLeftActions={getLeftContent}>
+      <View style={styles.contentContainer}>
+        <TouchableWithoutFeedback onPress={() => props.onToggleTask(props.id)}>
+          <View style={styles.checkContainer}>
+            {getCheckView(props.doneAt)}
           </View>
+        </TouchableWithoutFeedback>
+        <View style={styles.line}>
+          <Text style={[styles.desc, doneOrNotStyle]}>{props.desc}</Text>
+          <Text style={styles.date}>{formattedDate}</Text>
         </View>
-      </ReanimatedSwipeable>
-    </GestureHandlerRootView>
+      </View>
+    </ReanimatedSwipeable>
   );
 };
 
