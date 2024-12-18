@@ -96,7 +96,6 @@ export default class TaskList extends Component {
   };
 
   deleteTask = id => {
-    console.log('deleteTask', id);
     const tasks = this.state.tasks.filter(task => task.id !== id);
     this.setState({tasks}, this.filterTasks); // update the list, add callback to update list after state change
   };
