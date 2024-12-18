@@ -46,7 +46,19 @@ export default props => {
     );
   };
 
-  return (
+  const renderBody = () => (
+    <View style={styles.contentContainer}>
+      <TouchableWithoutFeedback onPress={() => props.onToggleTask(props.id)}>
+        <View style={styles.checkContainer}>{getCheckView(props.doneAt)}</View>
+      </TouchableWithoutFeedback>
+      <View style={styles.line}>
+        <Text style={[styles.desc, doneOrNotStyle]}>{props.desc}</Text>
+        <Text style={styles.date}>{formattedDate}</Text>
+      </View>
+    </View>
+  );
+
+  return !props.addTaskOpen ? (
     <ReanimatedSwipeable
       containerStyle={styles.swipeableContainer}
       overshootRight={false}
@@ -55,18 +67,10 @@ export default props => {
       }
       renderRightActions={(prog, drag) => getRightContent(prog, drag)}
       renderLeftActions={getLeftContent}>
-      <View style={styles.contentContainer}>
-        <TouchableWithoutFeedback onPress={() => props.onToggleTask(props.id)}>
-          <View style={styles.checkContainer}>
-            {getCheckView(props.doneAt)}
-          </View>
-        </TouchableWithoutFeedback>
-        <View style={styles.line}>
-          <Text style={[styles.desc, doneOrNotStyle]}>{props.desc}</Text>
-          <Text style={styles.date}>{formattedDate}</Text>
-        </View>
-      </View>
+      {renderBody()}
     </ReanimatedSwipeable>
+  ) : (
+    renderBody()
   );
 };
 
