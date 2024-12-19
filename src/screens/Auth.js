@@ -7,9 +7,13 @@ import {
   View,
 } from 'react-native';
 
+import axios from 'axios';
+
 import backgroundImage from '../../assets/imgs/login.jpg';
 import commonStyles from '../commonStyles';
 import AuthInput from '../components/AuthInput';
+
+import {server, showError, showSuccess} from '../common';
 
 const initialState = {
   email: '',
@@ -26,9 +30,41 @@ export default class Auth extends Component {
 
   signInOrSignUp = () => {
     if (this.state.stageNew) {
-      console.log('Sign up');
+      this.singUp();
     } else {
-      console.log('Sign in');
+      this.signIn();
+    }
+  };
+
+  singUp = async () => {
+    try {
+      await axios.post(`${server}/signup`, {
+        name: this.state.name,
+        email: this.state.email,
+        password: this.state.password,
+        confirmPassword: this.state.confirmPassword,
+      });
+
+      showSuccess('User registered!');
+      this.setState({...initialState});
+    } catch (e) {
+      showError(e);
+    }
+  };
+
+  signIn = async () => {
+    try {
+      const res = await axios.post(`${server}/signin`, {
+        email: this.state.email,
+        password: this.state.password,
+      });
+
+      axios.defaults.headers.common[
+        'Authorization'
+      ] = `bearer ${res.data.token}`;
+      this.props.navigation.navigate('Home');
+    } catch (e) {
+      showError(e);
     }
   };
 
