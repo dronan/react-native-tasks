@@ -3,14 +3,13 @@ import {
   ImageBackground,
   Text,
   StyleSheet,
-  TextInput,
   TouchableOpacity,
   View,
-  Platform,
 } from 'react-native';
 
 import backgroundImage from '../../assets/imgs/login.jpg';
 import commonStyles from '../commonStyles';
+import AuthInput from '../components/AuthInput';
 
 const initialState = {
   email: '',
@@ -43,20 +42,23 @@ export default class Auth extends Component {
             <Text style={styles.subtitle}>Create your account</Text>
           )}
           {this.state.stageNew && (
-            <TextInput
+            <AuthInput
+              icon="user"
               placeholder="Name"
               value={this.state.name}
               style={styles.input}
               onChangeText={name => this.setState({name})}
             />
           )}
-          <TextInput
+          <AuthInput
+            icon="at"
             placeholder="E-mail"
             value={this.state.email}
             style={styles.input}
             onChangeText={email => this.setState({email})}
           />
-          <TextInput
+          <AuthInput
+            icon="lock"
             placeholder="Password"
             value={this.state.password}
             secureTextEntry={true}
@@ -64,7 +66,8 @@ export default class Auth extends Component {
             onChangeText={password => this.setState({password})}
           />
           {this.state.stageNew && (
-            <TextInput
+            <AuthInput
+              icon="asterisk"
               placeholder="Confirm Password"
               value={this.state.confirmPassword}
               secureTextEntry={true}
@@ -117,7 +120,6 @@ const styles = StyleSheet.create({
   input: {
     marginTop: 10,
     backgroundColor: '#FFF',
-    padding: Platform.OS === 'ios' ? 15 : 10,
   },
   formContainer: {
     backgroundColor: 'rgba(0, 0, 0, 0.6)',
@@ -129,6 +131,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
     padding: 10,
     alignItems: 'center',
+    borderRadius: 5,
   },
   buttonText: {
     fontFamily: commonStyles.fontFamily,
