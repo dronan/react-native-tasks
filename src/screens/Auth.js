@@ -15,6 +15,9 @@ import commonStyles from '../commonStyles';
 const initialState = {
   email: '',
   password: '',
+  name: '',
+  confirmPassword: '',
+  stageNew: false,
 };
 
 export default class Auth extends Component {
@@ -28,22 +31,45 @@ export default class Auth extends Component {
         <Text style={styles.title}>Tasks</Text>
 
         <View style={styles.formContainer}>
+          {this.state.stageNew && (
+            <Text style={styles.subtitle}>Create your account</Text>
+          )}
+          {this.state.stageNew && (
+            <TextInput
+              placeholder="Name"
+              value={this.state.name}
+              style={styles.input}
+              onChangeText={name => this.setState({name})}
+            />
+          )}
           <TextInput
             placeholder="E-mail"
             value={this.state.email}
             style={styles.input}
-            onChangeText={() => this.setState({email})}
+            onChangeText={email => this.setState({email})}
           />
           <TextInput
             placeholder="Password"
             value={this.state.password}
+            secureTextEntry={true}
             style={styles.input}
-            onChangeText={() => this.setState({password})}
+            onChangeText={password => this.setState({password})}
           />
+          {this.state.stageNew && (
+            <TextInput
+              placeholder="Confirm Password"
+              value={this.state.confirmPassword}
+              secureTextEntry={true}
+              style={styles.input}
+              onChangeText={confirmPassword => this.setState({confirmPassword})}
+            />
+          )}
           <TouchableOpacity
             style={styles.button}
             onPress={() => this.props.navigation.navigate('Home')}>
-            <Text style={styles.buttonText}>Enter</Text>
+            <Text style={styles.buttonText}>
+              {this.state.stageNew ? 'Register' : 'Login'}
+            </Text>
           </TouchableOpacity>
         </View>
       </ImageBackground>
@@ -62,6 +88,13 @@ const styles = StyleSheet.create({
     fontFamily: commonStyles.fontFamily,
     color: commonStyles.colors.secondary,
     fontSize: 70,
+    marginBottom: 10,
+  },
+  subtitle: {
+    fontFamily: commonStyles.fontFamily,
+    color: '#FFF',
+    fontSize: 20,
+    textAlign: 'center',
     marginBottom: 10,
   },
   input: {
