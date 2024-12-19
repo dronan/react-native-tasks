@@ -25,6 +25,14 @@ export default class Auth extends Component {
     ...initialState,
   };
 
+  signInOrSignUp = () => {
+    if (this.state.stageNew) {
+      console.log('Sign up');
+    } else {
+      console.log('Sign in');
+    }
+  };
+
   render() {
     return (
       <ImageBackground source={backgroundImage} style={styles.background}>
@@ -66,12 +74,21 @@ export default class Auth extends Component {
           )}
           <TouchableOpacity
             style={styles.button}
-            onPress={() => this.props.navigation.navigate('Home')}>
+            onPress={() => this.signInOrSignUp()}>
             <Text style={styles.buttonText}>
               {this.state.stageNew ? 'Register' : 'Login'}
             </Text>
           </TouchableOpacity>
         </View>
+        <TouchableOpacity
+          style={{padding: 10}}
+          onPress={() => this.setState({stageNew: !this.state.stageNew})}>
+          <Text style={styles.buttonText}>
+            {this.state.stageNew
+              ? 'Already have an account?'
+              : 'Create an account'}
+          </Text>
+        </TouchableOpacity>
       </ImageBackground>
     );
   }
