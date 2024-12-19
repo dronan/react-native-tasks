@@ -12,7 +12,7 @@ import axios from 'axios';
 import backgroundImage from '../../assets/imgs/login.jpg';
 import commonStyles from '../commonStyles';
 import AuthInput from '../components/AuthInput';
-
+import PasswordValidation from '../components/PasswordValidation';
 import {server, showError, showSuccess} from '../common';
 
 const initialState = {
@@ -21,11 +21,18 @@ const initialState = {
   name: '',
   confirmPassword: '',
   stageNew: false,
+  isPasswordValid: false,
 };
 
 export default class Auth extends Component {
   state = {
     ...initialState,
+  };
+
+  handleValidationChange = isValid => {
+    if (isValid !== this.state.isPasswordValid) {
+      this.setState({isPasswordValid: isValid});
+    }
   };
 
   signInOrSignUp = () => {
@@ -69,6 +76,16 @@ export default class Auth extends Component {
   };
 
   render() {
+    const validations = [];
+    validations.push(
+      this.state.email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(this.state.email),
+    );
+    validations.push(this.state.password && this.state.password.length >= 6);
+    if (this.state.stageNew) {
+      validations.push(this.state.isPasswordValid);
+    }
+    const validForm = validations.reduce((all, v) => all && v, true);
+
     return (
       <ImageBackground source={backgroundImage} style={styles.background}>
         <Text style={styles.title}>Tasks</Text>
@@ -102,21 +119,37 @@ export default class Auth extends Component {
             onChangeText={password => this.setState({password})}
           />
           {this.state.stageNew && (
-            <AuthInput
-              icon="asterisk"
-              placeholder="Confirm Password"
-              value={this.state.confirmPassword}
-              secureTextEntry={true}
-              style={styles.input}
-              onChangeText={confirmPassword => this.setState({confirmPassword})}
-            />
+            <>
+              <AuthInput
+                icon="asterisk"
+                placeholder="Confirm Password"
+                value={this.state.confirmPassword}
+                secureTextEntry={true}
+                style={styles.input}
+                onChangeText={confirmPassword =>
+                  this.setState({confirmPassword})
+                }
+              />
+              <PasswordValidation
+                password={this.state.password}
+                confirmPassword={this.state.confirmPassword}
+                onValidationChange={this.handleValidationChange}
+              />
+            </>
           )}
+
           <TouchableOpacity
-            style={styles.button}
+            disabled={!validForm}
             onPress={() => this.signInOrSignUp()}>
-            <Text style={styles.buttonText}>
-              {this.state.stageNew ? 'Register' : 'Login'}
-            </Text>
+            <View
+              style={[
+                styles.button,
+                !validForm ? {backgroundColor: '#AAA'} : {},
+              ]}>
+              <Text style={styles.buttonText}>
+                {this.state.stageNew ? 'Register' : 'Login'}
+              </Text>
+            </View>
           </TouchableOpacity>
         </View>
         <TouchableOpacity
