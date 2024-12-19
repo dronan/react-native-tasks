@@ -1,9 +1,10 @@
 /**
  * @format
  */
+import 'react-native-gesture-handler';
 import 'react-native-reanimated';
 import {AppRegistry} from 'react-native';
-import Auth from './src/screens/Auth';
+import Navigator from './src/Navigator'; // Certifique-se de que o caminho está correto
 import {name as appName} from './app.json';
 
-AppRegistry.registerComponent(appName, () => Auth);
+AppRegistry.registerComponent(appName, () => Navigator);
