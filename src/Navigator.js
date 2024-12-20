@@ -5,15 +5,34 @@ import {createDrawerNavigator} from '@react-navigation/drawer';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
 import {SafeAreaProvider} from 'react-native-safe-area-context';
 
+import Menu from './screens/Menu';
+import commonStyles from './commonStyles';
+
 import AuthComponent from './screens/Auth';
 import TaskListComponent from './screens/TaskList';
 
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
 
+const menuConfig = {
+  initialRouteName: 'Today',
+  drawerContent: props => <Menu {...props} />,
+  screenOptions: {
+    drawerLabelStyle: {
+      fontFamily: commonStyles.fontFamily,
+      fontWeight: 'normal',
+      fontSize: 20,
+    },
+    drawerActiveTintColor: '#080',
+    drawerActiveLabelStyle: {
+      fontWeight: 'bold',
+    },
+  },
+};
+
 const DrawerNavigator = () => {
   return (
-    <Drawer.Navigator initialRouteName="Today">
+    <Drawer.Navigator {...menuConfig}>
       <Drawer.Screen
         name="Today"
         component={TaskListComponent}
