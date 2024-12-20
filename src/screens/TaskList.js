@@ -10,7 +10,6 @@ import {
   Alert,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import todayImage from '../../assets/imgs/today.jpg';
 import commonStyles from '../commonStyles';
 import moment from 'moment';
 
@@ -22,6 +21,11 @@ import Task from '../components/Task';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
 import AddTask from './AddTask';
+
+import todayImage from '../../assets/imgs/today.jpg';
+import tomorrowImage from '../../assets/imgs/tomorrow.jpg';
+import weekImage from '../../assets/imgs/week.jpg';
+import monthImage from '../../assets/imgs/month.jpg';
 
 const initialState = {
   showDoneTasks: true,
@@ -121,6 +125,32 @@ export default class TaskList extends Component {
     }
   };
 
+  getImages = () => {
+    switch (this.props.route.params.daysAhead) {
+      case 0:
+        return todayImage;
+      case 1:
+        return tomorrowImage;
+      case 7:
+        return weekImage;
+      case 30:
+        return monthImage;
+    }
+  };
+
+  getColor = () => {
+    switch (this.props.route.params.daysAhead) {
+      case 0:
+        return commonStyles.colors.today;
+      case 1:
+        return commonStyles.colors.tomorrow;
+      case 7:
+        return commonStyles.colors.week;
+      case 30:
+        return commonStyles.colors.month;
+    }
+  };
+
   render() {
     const today = moment().locale('en-US').format('ddd, D MMMM');
 
@@ -131,7 +161,7 @@ export default class TaskList extends Component {
           onCancel={this.toggleAddTask}
           onSave={this.addTask}
         />
-        <ImageBackground source={todayImage} style={styles.background}>
+        <ImageBackground source={this.getImages()} style={styles.background}>
           <View style={styles.iconBar}>
             <TouchableOpacity
               onPress={() => this.props.navigation.openDrawer()}>
@@ -169,7 +199,7 @@ export default class TaskList extends Component {
           />
         </View>
         <TouchableOpacity
-          style={styles.addButton}
+          style={[styles.addButton, {backgroundColor: this.getColor()}]}
           activeOpacity={0.7}
           onPress={this.toggleAddTask}>
           <Icon name="plus" size={20} color={commonStyles.colors.secondary} />
@@ -220,7 +250,6 @@ const styles = StyleSheet.create({
     width: 50,
     height: 50,
     borderRadius: 25,
-    backgroundColor: commonStyles.colors.today,
     justifyContent: 'center',
     alignItems: 'center',
   },
