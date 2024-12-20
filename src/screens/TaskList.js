@@ -14,6 +14,9 @@ import todayImage from '../../assets/imgs/today.jpg';
 import commonStyles from '../commonStyles';
 import moment from 'moment';
 
+import axios from 'axios';
+import {server, showError} from '../common';
+
 import Task from '../components/Task';
 
 import Icon from 'react-native-vector-icons/FontAwesome';
@@ -31,6 +34,16 @@ export default class TaskList extends Component {
     ...initialState,
   };
 
+  loadTasks = async () => {
+    try {
+      const maxDate = moment().format('YYYY-MM-DD 23:59:59');
+      const res = await axios.get(`${server}/tasks?date=${maxDate}`);
+      this.setState({tasks: res.data}, this.filterTasks);
+    } catch (e) {
+      showError(e);
+    }
+  };
+
   componentDidMount = async () => {
     const stateString = await AsyncStorage.getItem('tasksState');
     const savedState = JSON.parse(stateString) || initialState;
@@ -40,6 +53,7 @@ export default class TaskList extends Component {
       },
       this.filterTasks,
     );
+    this.loadTasks();
   };
 
   toggleAddTask = () => {
