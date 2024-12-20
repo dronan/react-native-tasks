@@ -36,7 +36,9 @@ export default class TaskList extends Component {
 
   loadTasks = async () => {
     try {
-      const maxDate = moment().format('YYYY-MM-DD 23:59:59');
+      const maxDate = moment()
+        .add({days: this.props.route.params.daysAhead})
+        .format('YYYY-MM-DD 23:59:59');
       const res = await axios.get(`${server}/tasks?date=${maxDate}`);
       this.setState({tasks: res.data}, this.filterTasks);
     } catch (e) {
@@ -131,6 +133,14 @@ export default class TaskList extends Component {
         />
         <ImageBackground source={todayImage} style={styles.background}>
           <View style={styles.iconBar}>
+            <TouchableOpacity
+              onPress={() => this.props.navigation.openDrawer()}>
+              <Icon
+                name="bars"
+                size={20}
+                color={commonStyles.colors.secondary}
+              />
+            </TouchableOpacity>
             <TouchableOpacity onPress={this.toggleFilter}>
               <Icon
                 name={this.state.showDoneTasks ? 'eye' : 'eye-slash'}
@@ -140,7 +150,7 @@ export default class TaskList extends Component {
             </TouchableOpacity>
           </View>
           <View style={styles.titleBar}>
-            <Text style={styles.title}>Today</Text>
+            <Text style={styles.title}>{this.props.route.name}</Text>
             <Text style={styles.subtitle}>{today}</Text>
           </View>
         </ImageBackground>
@@ -201,7 +211,7 @@ const styles = StyleSheet.create({
     marginTop: Platform.OS === 'ios' ? 30 : 10,
     marginHorizontal: 20,
     flexDirection: 'row',
-    justifyContent: 'flex-end',
+    justifyContent: 'space-between',
   },
   addButton: {
     position: 'absolute',
