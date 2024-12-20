@@ -21,7 +21,7 @@ const menuConfig = {
     drawerLabelStyle: {
       fontFamily: commonStyles.fontFamily,
       fontWeight: 'normal',
-      fontSize: 20,
+      fontSize: 18,
     },
     drawerActiveTintColor: '#080',
     drawerActiveLabelStyle: {
