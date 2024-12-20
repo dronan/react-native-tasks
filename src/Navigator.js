@@ -10,6 +10,7 @@ import commonStyles from './commonStyles';
 
 import AuthComponent from './screens/Auth';
 import TaskListComponent from './screens/TaskList';
+import AuthOrApp from './screens/AuthOrApp';
 
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -67,6 +68,11 @@ const Navigator = () => {
       <SafeAreaProvider>
         <NavigationContainer>
           <Stack.Navigator>
+            <Stack.Screen
+              name="AuthOrApp"
+              component={AuthOrApp}
+              options={{headerShown: false}}
+            />
             <Stack.Screen
               name="Auth"
               component={AuthComponent}
