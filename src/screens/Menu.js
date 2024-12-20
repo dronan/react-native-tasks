@@ -24,29 +24,24 @@ export default props => {
   };
 
   return (
-    <DrawerContentScrollView {...props}>
+    <DrawerContentScrollView {...props} contentContainerStyle={{flex: 1}}>
       <View style={styles.header}>
         <Text style={styles.title}>Tasks</Text>
-        <View style={styles.avatar}>
-          <Avatar size={60} name={name} source={{uri: avatarUrl}} />
-        </View>
-        <View style={styles.userInfo}>
-          <Text style={styles.userName}>{name}</Text>
-          <Text style={styles.userEmail}>{email}</Text>
-        </View>
-        <TouchableOpacity onPress={logout}>
-          <View style={styles.logout}>
-            <Icon
-              name="sign-out"
-              style={styles.logoutIcon}
-              size={20}
-              color="#800"
-            />
-          </View>
-        </TouchableOpacity>
       </View>
 
       <DrawerItemList {...props} />
+
+      <View style={{flex: 1}} />
+
+      <View style={styles.footer}>
+        <Avatar size={40} name={name} source={{uri: avatarUrl}} />
+        <View style={styles.footerTextContainer}>
+          <Text style={styles.userName}>{name}</Text>
+          <TouchableOpacity onPress={logout} style={styles.logout}>
+            <Icon name="sign-out" style={styles.logoutIcon} size={20} />
+          </TouchableOpacity>
+        </View>
+      </View>
     </DrawerContentScrollView>
   );
 };
@@ -67,28 +62,30 @@ const styles = StyleSheet.create({
     paddingLeft: 10,
     paddingBottom: 10,
   },
-  avatar: {
-    flexDirection: 'row',
-    paddingLeft: 10,
-  },
-  userName: {
-    fontFamily: commonStyles.fontFamily,
-    fontSize: 20,
-    color: commonStyles.colors.mainText,
-    paddingLeft: 10,
-  },
-  userEmail: {
-    fontFamily: commonStyles.fontFamily,
-    fontSize: 15,
-    color: commonStyles.colors.subText,
-    paddingLeft: 10,
-  },
-  logout: {
+  footer: {
+    borderTopWidth: 1,
+    borderColor: '#DDD',
+    padding: 10,
     flexDirection: 'row',
     alignItems: 'center',
+    backgroundColor: '#FFF',
+  },
+  footerTextContainer: {
+    flex: 1,
     marginLeft: 10,
+    justifyContent: 'space-between',
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  userName: {
+    fontSize: 18,
+    color: commonStyles.colors.mainText,
+    fontWeight: 'bold',
+  },
+  logout: {
+    padding: 5,
   },
   logoutIcon: {
-    color: '#800',
+    color: '#AAA',
   },
 });

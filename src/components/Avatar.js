@@ -15,7 +15,7 @@ const Avatar = ({name = '', source, size = 60, style}) => {
     <View
       style={[
         styles.container,
-        {width: size, height: size, borderRadius: size / 2},
+        {width: size, height: size, borderRadius: 8},
         style,
       ]}>
       {!imageLoaded || imageError ? (
@@ -37,7 +37,7 @@ const Avatar = ({name = '', source, size = 60, style}) => {
           {
             width: size,
             height: size,
-            borderRadius: size / 2,
+            borderRadius: 8,
             position: 'absolute',
             top: 0,
             left: 0,
