@@ -18,11 +18,16 @@ import {server, showError, showSuccess} from '../common';
 import PasswordValidation from '../components/PasswordValidation';
 import {launchImageLibrary} from 'react-native-image-picker';
 import {Image, Platform} from 'react-native';
+import Avatar from '../components/Avatar';
 
 export default props => {
   const route = useRoute();
   const {userData = {}} = route.params || {};
-  const {id, email, name, password} = userData;
+  const {id, email, name, password, avatarUrl} = userData;
+
+  const url = avatarUrl
+    ? avatarUrl.replace('localhost', server.split('//')[1].split(':')[0])
+    : null;
 
   const [showValidation, setShowValidation] = useState(false);
   const [isPasswordValid, setIsPasswordValid] = useState(false);
@@ -54,6 +59,22 @@ export default props => {
 
   const [avatar, setAvatar] = useState(null);
 
+  const handleDeletePhoto = async () => {
+    setAvatar(null);
+    try {
+      await axios.put(`${server}/users/${id}/avatar/remove`);
+      const userDataString = await AsyncStorage.getItem('userData');
+      const userData = JSON.parse(userDataString);
+      userData.avatarUrl = null;
+      await AsyncStorage.setItem('userData', JSON.stringify(userData));
+      props.navigation.navigate('Home', userData);
+      showSuccess('Avatar removed!');
+    } catch (error) {
+      setAvatar(null);
+      showError('Unspected error removing avatar');
+    }
+  };
+
   const handleChoosePhoto = () => {
     const options = {
       mediaType: 'photo',
@@ -82,30 +103,43 @@ export default props => {
           : photo.uri.replace('file://', ''),
     });
 
-    try {
-      const response = await axios.put(
-        `${server}/users/${id}/avatar`,
-        formData,
-        {
-          headers: {
-            'Content-Type': 'multipart/form-data',
+    const maxRetries = 3;
+    let attempt = 0;
+
+    while (attempt < maxRetries) {
+      try {
+        console.log('formData uploadAvatar');
+        const response = await axios.put(
+          `${server}/users/${id}/avatar?rd=${Math.random()}`,
+          formData,
+          {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+            },
           },
-        },
-      );
+        );
 
-      const userDataString = await AsyncStorage.getItem('userData');
-
-      const userData = JSON.parse(userDataString);
-
-      userData.avatarUrl = response.data.avatarUrl;
-
-      await AsyncStorage.setItem('userData', JSON.stringify(userData));
-
-      showSuccess('Avatar updated!');
-      props.navigation.navigate('Home', userData);
-    } catch (error) {
-      console.log('Erro no upload do avatar:', error);
-      showError(error);
+        const userDataString = await AsyncStorage.getItem('userData');
+        const userData = JSON.parse(userDataString);
+        userData.avatarUrl = response.data.avatarUrl;
+        await AsyncStorage.setItem('userData', JSON.stringify(userData));
+        setAvatar({uri: userData.avatarUrl});
+        props.navigation.navigate('Home', userData);
+        showSuccess('Avatar uploaded!');
+        break;
+      } catch (error) {
+        if (error.message === 'Network Error') {
+          attempt++;
+          if (attempt < maxRetries) {
+            await new Promise(res => setTimeout(res, 1000));
+          } else {
+            showError('Error uploading avatar after 3 attempts');
+          }
+        } else {
+          showError('Unspected error uploading avatar');
+          break;
+        }
+      }
     }
   };
 
@@ -133,12 +167,12 @@ export default props => {
 
     try {
       const res = await axios.put(`${server}/users/save/${id}`, userUpdate);
-      showSuccess('User updated!');
       await AsyncStorage.setItem('userData', JSON.stringify(res.data));
       axios.defaults.headers.common[
         'Authorization'
       ] = `bearer ${res.data.token}`;
       props.navigation.navigate('Home', res.data);
+      showSuccess('User updated!');
     } catch (e) {
       showError(e);
     }
@@ -202,6 +236,23 @@ export default props => {
           <View style={styles.dataLine}>
             <Icon name="picture-o" style={styles.accountIcon} size={15} />
             <Text style={{flex: 1}}>Avatar</Text>
+
+            {url && (
+              <View
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'top',
+                  marginRight: 10,
+                }}>
+                <TouchableOpacity
+                  onPress={handleDeletePhoto}
+                  style={[styles.close, styles.deleteAvatar]}>
+                  <Icon name="close" style={[styles.closeIcon]} size={10} />
+                </TouchableOpacity>
+                <Avatar size={30} name={name} source={{uri: url}} />
+              </View>
+            )}
+
             <TouchableOpacity onPress={handleChoosePhoto}>
               <Icon name="upload" size={20} style={styles.iconShowPass} />
             </TouchableOpacity>
@@ -429,5 +480,13 @@ const styles = StyleSheet.create({
   iconShowPass: {
     color: '#c6c6c8',
     marginLeft: 10,
+  },
+  deleteAvatar: {
+    borderRadius: 50,
+    zIndex: 1,
+    padding: 3,
+    position: 'absolute',
+    top: -3,
+    right: -8,
   },
 });
