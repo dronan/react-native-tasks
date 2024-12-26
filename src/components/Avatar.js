@@ -26,7 +26,7 @@ const Avatar = ({name = '', source, size = 60, style}) => {
 
       <Image
         source={source || defaultImage}
-        onError={() => {
+        onError={err => {
           setImageError(true);
           setImageLoaded(false);
         }}

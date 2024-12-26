@@ -7,6 +7,7 @@ import {
   TextInput,
   Alert,
   ScrollView,
+  Button,
 } from 'react-native';
 import commonStyles from '../commonStyles';
 import Icon from 'react-native-vector-icons/FontAwesome';
@@ -15,6 +16,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useRoute} from '@react-navigation/native';
 import {server, showError, showSuccess} from '../common';
 import PasswordValidation from '../components/PasswordValidation';
+import {launchImageLibrary} from 'react-native-image-picker';
+import {Image, Platform} from 'react-native';
 
 export default props => {
   const route = useRoute();
@@ -49,6 +52,63 @@ export default props => {
     setValidForm(validations.every(Boolean));
   }, [email, password, newPassword, newConfirmPassword, isPasswordValid]);
 
+  const [avatar, setAvatar] = useState(null);
+
+  const handleChoosePhoto = () => {
+    const options = {
+      mediaType: 'photo',
+    };
+    launchImageLibrary(options, response => {
+      if (response.didCancel) {
+        console.log('Usuário cancelou a seleção de imagem');
+      } else if (response.errorMessage) {
+        console.error('Erro na seleção de imagem: ', response.errorMessage);
+      } else {
+        const source = {uri: response.assets[0].uri};
+        setAvatar(source);
+        uploadAvatar(response.assets[0]);
+      }
+    });
+  };
+
+  const uploadAvatar = async photo => {
+    const formData = new FormData();
+    formData.append('avatar', {
+      name: photo.fileName,
+      type: photo.type,
+      uri:
+        Platform.OS === 'android'
+          ? photo.uri
+          : photo.uri.replace('file://', ''),
+    });
+
+    try {
+      const response = await axios.put(
+        `${server}/users/${id}/avatar`,
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        },
+      );
+
+      const userDataString = await AsyncStorage.getItem('userData');
+
+      const userData = JSON.parse(userDataString);
+
+      userData.avatarUrl = response.data.avatarUrl;
+
+      await AsyncStorage.setItem('userData', JSON.stringify(userData));
+
+      showSuccess('Avatar updated!');
+      props.navigation.navigate('Home', userData);
+    } catch (error) {
+      console.log('Erro no upload do avatar:', error);
+      showError(error);
+    }
+  };
+
   const logout = async () => {
     delete axios.defaults.headers.common['Authorization'];
     await AsyncStorage.removeItem('userData');
@@ -72,7 +132,7 @@ export default props => {
     }
 
     try {
-      const res = await axios.put(`${server}/user/save/${id}`, userUpdate);
+      const res = await axios.put(`${server}/users/save/${id}`, userUpdate);
       showSuccess('User updated!');
       await AsyncStorage.setItem('userData', JSON.stringify(res.data));
       axios.defaults.headers.common[
@@ -93,7 +153,7 @@ export default props => {
           {
             text: 'Yes',
             onPress: async () => {
-              await axios.delete(`${server}/user/delete/${id}`, {});
+              await axios.delete(`${server}/users/delete/${id}`, {});
               showSuccess('User deleted!');
               logout();
             },
@@ -138,12 +198,24 @@ export default props => {
             <Text>Email</Text>
             <TextInput style={styles.dataInput} readOnly value={email} />
           </View>
+          <View style={styles.dataSeparator} />
+          <View style={styles.dataLine}>
+            <Icon name="picture-o" style={styles.accountIcon} size={15} />
+            <Text style={{flex: 1}}>Avatar</Text>
+            <TouchableOpacity onPress={handleChoosePhoto}>
+              <Icon name="upload" size={20} style={styles.iconShowPass} />
+            </TouchableOpacity>
+          </View>
         </View>
+        {avatar && (
+          <Text style={{width: '100%', textAlign: 'right'}}>
+            Upload complete
+          </Text>
+        )}
 
         <View style={styles.accountContainer}>
           <Text style={styles.headerTitle}>Account security</Text>
 
-          {/* Inputs de senha */}
           <View style={styles.dataContainer}>
             <View style={styles.dataLine}>
               <Icon name="lock" style={styles.accountIcon} size={15} />
@@ -274,7 +346,6 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    // backgroundColor: '#000',
     borderTopLeftRadius: 0,
     borderTopRightRadius: 20,
     padding: 20,

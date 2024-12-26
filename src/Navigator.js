@@ -26,7 +26,7 @@ const menuConfig = {
       borderRadius: 12,
       marginVertical: 4,
     },
-    drawerActiveBackgroundColor: '#f6f6f6',
+    drawerActiveBackgroundColor: '#CCC',
     drawerActiveTintColor: '#000', // cor do texto
     drawerLabelStyle: {
       fontFamily: commonStyles.fontFamily,

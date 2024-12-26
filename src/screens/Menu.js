@@ -9,6 +9,7 @@ import commonStyles from '../commonStyles';
 import Avatar from '../components/Avatar';
 
 import Icon from 'react-native-vector-icons/FontAwesome';
+import {server} from '../common';
 
 export default props => {
   const route = useRoute();
@@ -18,6 +19,10 @@ export default props => {
   const userEdit = () => {
     props.navigation.navigate('UserEdit', {userData});
   };
+
+  const url = avatarUrl
+    ? avatarUrl.replace('localhost', server.split('//')[1].split(':')[0])
+    : null;
 
   return (
     <DrawerContentScrollView {...props} contentContainerStyle={{flex: 1}}>
@@ -30,7 +35,7 @@ export default props => {
       <View style={{flex: 1}} />
 
       <View style={styles.footer}>
-        <Avatar size={40} name={name} source={{uri: avatarUrl}} />
+        <Avatar size={40} name={name} source={{uri: url}} />
         <View style={styles.footerTextContainer}>
           <TouchableOpacity onPress={userEdit}>
             <Text style={styles.userName}>{name}</Text>

@@ -12,7 +12,7 @@ export default class AuthOrApp extends Component {
     try {
       userData = JSON.parse(userDataJson);
     } catch (e) {
-      // userData is invalid
+      // userData está inválido
     }
 
     if (userData && userData.token) {
