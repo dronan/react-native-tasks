@@ -8,19 +8,15 @@ import {useRoute} from '@react-navigation/native';
 import commonStyles from '../commonStyles';
 import Avatar from '../components/Avatar';
 
-import axios from 'axios';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
 export default props => {
   const route = useRoute();
   const userData = route.params || {};
-  const {avatarUrl, name, email} = userData;
+  const {avatarUrl, name} = userData;
 
-  const logout = async () => {
-    delete axios.defaults.headers.common['Authorization'];
-    await AsyncStorage.removeItem('userData');
-    props.navigation.navigate('AuthOrApp');
+  const userEdit = () => {
+    props.navigation.navigate('UserEdit', {userData});
   };
 
   return (
@@ -36,9 +32,11 @@ export default props => {
       <View style={styles.footer}>
         <Avatar size={40} name={name} source={{uri: avatarUrl}} />
         <View style={styles.footerTextContainer}>
-          <Text style={styles.userName}>{name}</Text>
-          <TouchableOpacity onPress={logout} style={styles.logout}>
-            <Icon name="sign-out" style={styles.logoutIcon} size={20} />
+          <TouchableOpacity onPress={userEdit}>
+            <Text style={styles.userName}>{name}</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={userEdit} style={styles.more}>
+            <Icon name="ellipsis-h" style={styles.moreIcon} size={20} />
           </TouchableOpacity>
         </View>
       </View>
@@ -68,7 +66,6 @@ const styles = StyleSheet.create({
     padding: 10,
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#FFF',
   },
   footerTextContainer: {
     flex: 1,
@@ -82,10 +79,10 @@ const styles = StyleSheet.create({
     color: commonStyles.colors.mainText,
     fontWeight: 'bold',
   },
-  logout: {
+  more: {
     padding: 5,
   },
-  logoutIcon: {
-    color: '#AAA',
+  moreIcon: {
+    color: '#c1c1c1',
   },
 });

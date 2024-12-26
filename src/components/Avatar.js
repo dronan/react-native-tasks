@@ -66,7 +66,6 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: 20,
   },
-  image: {},
 });
 
 export default Avatar;

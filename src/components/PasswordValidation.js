@@ -6,6 +6,7 @@ const PasswordValidation = ({
   password,
   confirmPassword,
   onValidationChange,
+  contrast,
 }) => {
   const validations = [
     {
@@ -52,7 +53,13 @@ const PasswordValidation = ({
             size={20}
             color={item.condition ? 'green' : 'gray'}
           />
-          <Text style={styles.validationText}>{item.label}</Text>
+          <Text
+            style={[
+              styles.validationText,
+              {color: contrast ? '#000' : '#FFF'},
+            ]}>
+            {item.label}
+          </Text>
         </View>
       ))}
     </View>
