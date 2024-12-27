@@ -5,6 +5,8 @@ import {
   StyleSheet,
   TouchableOpacity,
   View,
+  ScrollView,
+  Dimensions,
 } from 'react-native';
 
 import axios from 'axios';
@@ -23,6 +25,7 @@ const initialState = {
   confirmPassword: '',
   stageNew: false,
   isPasswordValid: false,
+  isLandscape: false,
 };
 
 export default class Auth extends Component {
@@ -78,7 +81,29 @@ export default class Auth extends Component {
     }
   };
 
+  componentDidMount = async () => {
+    this.handleOrientationChange();
+    this.unsubscribe = Dimensions.addEventListener(
+      'change',
+      this.handleOrientationChange,
+    );
+  };
+
+  componentWillUnmount() {
+    if (this.unsubscribe) {
+      this.unsubscribe.remove();
+    }
+  }
+
+  handleOrientationChange = () => {
+    const {width, height} = Dimensions.get('window');
+    const isLandscape = width > height;
+    this.setState({isLandscape});
+  };
+
   render() {
+    const {isLandscape} = this.state;
+
     const validations = [];
     validations.push(
       this.state.email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(this.state.email),
@@ -91,79 +116,88 @@ export default class Auth extends Component {
 
     return (
       <ImageBackground source={backgroundImage} style={styles.background}>
-        <Text style={styles.title}>Tasks</Text>
+        <ScrollView
+          contentContainerStyle={[
+            {
+              justifyContent: 'center',
+              alignItems: 'center',
+            },
+            !isLandscape ? {flex: 1} : {},
+          ]}>
+          <Text style={styles.title}>Tasks</Text>
 
-        <View style={styles.formContainer}>
-          {this.state.stageNew && (
-            <Text style={styles.subtitle}>Create your account</Text>
-          )}
-          {this.state.stageNew && (
-            <AuthInput
-              icon="user"
-              placeholder="Name"
-              value={this.state.name}
-              style={styles.input}
-              onChangeText={name => this.setState({name})}
-            />
-          )}
-          <AuthInput
-            icon="at"
-            placeholder="E-mail"
-            value={this.state.email}
-            style={styles.input}
-            onChangeText={email => this.setState({email})}
-          />
-          <AuthInput
-            icon="lock"
-            placeholder="Password"
-            value={this.state.password}
-            secureTextEntry={true}
-            style={styles.input}
-            onChangeText={password => this.setState({password})}
-          />
-          {this.state.stageNew && (
-            <>
+          <View style={styles.formContainer}>
+            {this.state.stageNew && (
+              <Text style={styles.subtitle}>Create your account</Text>
+            )}
+            {this.state.stageNew && (
               <AuthInput
-                icon="asterisk"
-                placeholder="Confirm Password"
-                value={this.state.confirmPassword}
-                secureTextEntry={true}
+                icon="user"
+                placeholder="Name"
+                value={this.state.name}
                 style={styles.input}
-                onChangeText={confirmPassword =>
-                  this.setState({confirmPassword})
-                }
+                onChangeText={name => this.setState({name})}
               />
-              <PasswordValidation
-                password={this.state.password}
-                confirmPassword={this.state.confirmPassword}
-                onValidationChange={this.handleValidationChange}
-              />
-            </>
-          )}
+            )}
+            <AuthInput
+              icon="at"
+              placeholder="E-mail"
+              value={this.state.email}
+              style={styles.input}
+              onChangeText={email => this.setState({email})}
+            />
+            <AuthInput
+              icon="lock"
+              placeholder="Password"
+              value={this.state.password}
+              secureTextEntry={true}
+              style={styles.input}
+              onChangeText={password => this.setState({password})}
+            />
+            {this.state.stageNew && (
+              <>
+                <AuthInput
+                  icon="asterisk"
+                  placeholder="Confirm Password"
+                  value={this.state.confirmPassword}
+                  secureTextEntry={true}
+                  style={styles.input}
+                  onChangeText={confirmPassword =>
+                    this.setState({confirmPassword})
+                  }
+                />
+                <PasswordValidation
+                  password={this.state.password}
+                  confirmPassword={this.state.confirmPassword}
+                  onValidationChange={this.handleValidationChange}
+                />
+              </>
+            )}
 
+            <TouchableOpacity
+              disabled={!validForm}
+              onPress={() => this.signInOrSignUp()}>
+              <View
+                style={[
+                  styles.button,
+                  !validForm ? {backgroundColor: '#AAA'} : {},
+                ]}>
+                <Text style={styles.buttonText}>
+                  {this.state.stageNew ? 'Register' : 'Login'}
+                </Text>
+              </View>
+            </TouchableOpacity>
+          </View>
           <TouchableOpacity
-            disabled={!validForm}
-            onPress={() => this.signInOrSignUp()}>
-            <View
-              style={[
-                styles.button,
-                !validForm ? {backgroundColor: '#AAA'} : {},
-              ]}>
-              <Text style={styles.buttonText}>
-                {this.state.stageNew ? 'Register' : 'Login'}
-              </Text>
-            </View>
+            style={{padding: 10}}
+            onPress={() => this.setState({stageNew: !this.state.stageNew})}>
+            <Text style={styles.buttonText}>
+              {this.state.stageNew
+                ? 'Already have an account?'
+                : 'Create an account'}
+            </Text>
           </TouchableOpacity>
-        </View>
-        <TouchableOpacity
-          style={{padding: 10}}
-          onPress={() => this.setState({stageNew: !this.state.stageNew})}>
-          <Text style={styles.buttonText}>
-            {this.state.stageNew
-              ? 'Already have an account?'
-              : 'Create an account'}
-          </Text>
-        </TouchableOpacity>
+        </ScrollView>
       </ImageBackground>
     );
   }
@@ -197,6 +231,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.6)',
     padding: 20,
     width: '90%',
+    alignSelf: 'center',
   },
   button: {
     backgroundColor: '#080',
@@ -209,5 +244,6 @@ const styles = StyleSheet.create({
     fontFamily: commonStyles.fontFamily,
     color: commonStyles.colors.secondary,
     fontSize: 15,
+    alignSelf: 'center',
   },
 });

@@ -29,6 +29,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     flexDirection: 'row',
     alignItems: 'center',
+    position: 'relative',
   },
   iconLeft: {
     color: '#333',
@@ -36,7 +37,9 @@ const styles = StyleSheet.create({
   },
   iconRight: {
     color: '#333',
-    marginRight: 5,
+    position: 'absolute',
+    float: 'right',
+    right: 20,
   },
   input: {
     marginLeft: 20,

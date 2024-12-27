@@ -7,18 +7,19 @@ import {
   TextInput,
   Alert,
   ScrollView,
-  Button,
+  Platform,
 } from 'react-native';
-import commonStyles from '../commonStyles';
-import Icon from 'react-native-vector-icons/FontAwesome';
-import axios from 'axios';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import {launchImageLibrary} from 'react-native-image-picker';
 import {useRoute} from '@react-navigation/native';
 import {server, showError, showSuccess} from '../common';
+
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios';
+
+import Icon from 'react-native-vector-icons/FontAwesome';
 import PasswordValidation from '../components/PasswordValidation';
-import {launchImageLibrary} from 'react-native-image-picker';
-import {Image, Platform} from 'react-native';
 import Avatar from '../components/Avatar';
+import commonStyles from '../commonStyles';
 
 export default props => {
   const route = useRoute();
@@ -215,142 +216,147 @@ export default props => {
         </View>
       </View>
       <ScrollView style={[styles.accountContainer, {flex: 1}]}>
-        <Text style={styles.headerTitle}>User information</Text>
-        <View style={styles.dataContainer}>
-          <View style={styles.dataLine}>
-            <Icon name="user-o" style={styles.accountIcon} size={15} />
-            <Text>Name</Text>
-            <TextInput
-              style={styles.dataInput}
-              value={newName}
-              onChangeText={nName => setNewName(nName)}
-            />
-          </View>
-          <View style={styles.dataSeparator} />
-          <View style={styles.dataLine}>
-            <Icon name="envelope-o" style={styles.accountIcon} size={15} />
-            <Text>Email</Text>
-            <TextInput style={styles.dataInput} readOnly value={email} />
-          </View>
-          <View style={styles.dataSeparator} />
-          <View style={styles.dataLine}>
-            <Icon name="picture-o" style={styles.accountIcon} size={15} />
-            <Text style={{flex: 1}}>Avatar</Text>
-
-            {url && (
-              <View
-                style={{
-                  flexDirection: 'row',
-                  alignItems: 'top',
-                  marginRight: 10,
-                }}>
-                <TouchableOpacity
-                  onPress={handleDeletePhoto}
-                  style={[styles.close, styles.deleteAvatar]}>
-                  <Icon name="close" style={[styles.closeIcon]} size={10} />
-                </TouchableOpacity>
-                <Avatar size={30} name={name} source={{uri: url}} />
-              </View>
-            )}
-
-            <TouchableOpacity onPress={handleChoosePhoto}>
-              <Icon name="upload" size={20} style={styles.iconShowPass} />
-            </TouchableOpacity>
-          </View>
-        </View>
-        {avatar && (
-          <Text style={{width: '100%', textAlign: 'right'}}>
-            Upload complete
-          </Text>
-        )}
-
-        <View style={styles.accountContainer}>
-          <Text style={styles.headerTitle}>Account security</Text>
-
+        <View>
+          <Text style={styles.headerTitle}>User information</Text>
           <View style={styles.dataContainer}>
             <View style={styles.dataLine}>
-              <Icon name="lock" style={styles.accountIcon} size={15} />
-              <Text>Password</Text>
+              <Icon name="user-o" style={styles.accountIcon} size={15} />
+              <Text>Name</Text>
               <TextInput
                 style={styles.dataInput}
-                secureTextEntry={securePass}
-                value={newPassword}
-                onChangeText={nPass => {
-                  setShowValidation(true);
-                  setNewPassord(nPass);
-                }}
-              />
-              <Icon
-                name={securePass ? 'eye-slash' : 'eye'}
-                size={20}
-                style={styles.iconShowPass}
-                onPress={() => setSecurePass(!securePass)}
+                value={newName}
+                onChangeText={nName => setNewName(nName)}
               />
             </View>
             <View style={styles.dataSeparator} />
             <View style={styles.dataLine}>
-              <Icon name="asterisk" style={styles.accountIcon} size={15} />
-              <Text>Confirm password</Text>
-              <TextInput
-                style={styles.dataInput}
-                secureTextEntry={secureConfirmPass}
-                value={newConfirmPassword}
-                onChangeText={nPass => {
-                  setShowValidation(true);
-                  setNewConfirmPassword(nPass);
-                }}
-              />
-              <Icon
-                name={secureConfirmPass ? 'eye-slash' : 'eye'}
-                size={20}
-                style={styles.iconShowPass}
-                onPress={() => setSecureConfirmPass(!secureConfirmPass)}
-              />
+              <Icon name="envelope-o" style={styles.accountIcon} size={15} />
+              <Text>Email</Text>
+              <TextInput style={styles.dataInput} readOnly value={email} />
+            </View>
+            <View style={styles.dataSeparator} />
+            <View style={styles.dataLine}>
+              <Icon name="picture-o" style={styles.accountIcon} size={15} />
+              <Text style={{flex: 1}}>Avatar</Text>
+
+              {url && (
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'top',
+                    marginRight: 10,
+                  }}>
+                  <TouchableOpacity
+                    onPress={handleDeletePhoto}
+                    style={[styles.close, styles.deleteAvatar]}>
+                    <Icon name="close" style={[styles.closeIcon]} size={10} />
+                  </TouchableOpacity>
+                  <Avatar size={30} name={name} source={{uri: url}} />
+                </View>
+              )}
+
+              <TouchableOpacity onPress={handleChoosePhoto}>
+                <Icon name="upload" size={20} style={styles.iconShowPass} />
+              </TouchableOpacity>
             </View>
           </View>
-
-          {showValidation && (
-            <View style={[styles.dataContainer, styles.validationContainer]}>
-              <PasswordValidation
-                password={newPassword}
-                confirmPassword={newConfirmPassword}
-                onValidationChange={handleValidationChange}
-                contrast={true}
-              />
-            </View>
+          {avatar && (
+            <Text style={{width: '100%', textAlign: 'right'}}>
+              Upload complete
+            </Text>
           )}
+
+          <View style={styles.accountContainer}>
+            <Text style={styles.headerTitle}>Account security</Text>
+
+            <View style={styles.dataContainer}>
+              <View style={styles.dataLine}>
+                <Icon name="lock" style={styles.accountIcon} size={15} />
+                <Text>Password</Text>
+                <TextInput
+                  style={styles.dataInput}
+                  secureTextEntry={securePass}
+                  value={newPassword}
+                  onChangeText={nPass => {
+                    setShowValidation(true);
+                    setNewPassord(nPass);
+                  }}
+                />
+                <Icon
+                  name={securePass ? 'eye-slash' : 'eye'}
+                  size={20}
+                  style={styles.iconShowPass}
+                  onPress={() => setSecurePass(!securePass)}
+                />
+              </View>
+              <View style={styles.dataSeparator} />
+              <View style={styles.dataLine}>
+                <Icon name="asterisk" style={styles.accountIcon} size={15} />
+                <Text>Confirm password</Text>
+                <TextInput
+                  style={styles.dataInput}
+                  secureTextEntry={secureConfirmPass}
+                  value={newConfirmPassword}
+                  onChangeText={nPass => {
+                    setShowValidation(true);
+                    setNewConfirmPassword(nPass);
+                  }}
+                />
+                <Icon
+                  name={secureConfirmPass ? 'eye-slash' : 'eye'}
+                  size={20}
+                  style={styles.iconShowPass}
+                  onPress={() => setSecureConfirmPass(!secureConfirmPass)}
+                />
+              </View>
+            </View>
+
+            {showValidation && (
+              <View style={[styles.dataContainer, styles.validationContainer]}>
+                <PasswordValidation
+                  password={newPassword}
+                  confirmPassword={newConfirmPassword}
+                  onValidationChange={handleValidationChange}
+                  contrast={true}
+                />
+              </View>
+            )}
+          </View>
+
+          <View style={styles.accountContainer}>
+            <View style={styles.dataContainer}>
+              <View style={styles.dataLine}>
+                <TouchableOpacity onPress={logout} style={styles.logout}>
+                  <Icon name="sign-out" style={styles.logoutIcon} size={15} />
+                </TouchableOpacity>
+                <TouchableOpacity onPress={logout}>
+                  <Text>Logout</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
         </View>
 
-        <View style={styles.accountContainer}>
-          <View style={styles.dataContainer}>
-            <View style={styles.dataLine}>
-              <TouchableOpacity onPress={logout} style={styles.logout}>
-                <Icon name="sign-out" style={styles.logoutIcon} size={15} />
+        <View style={{marginTop: 20}}>
+          <View style={styles.bottom}>
+            <View style={{flexDirection: 'row'}}>
+              <TouchableOpacity
+                onPress={edit}
+                style={[
+                  styles.saveButton,
+                  !validForm ? {backgroundColor: '#AAA'} : {},
+                ]}>
+                <Text style={styles.saveText}>Save</Text>
               </TouchableOpacity>
-              <TouchableOpacity onPress={logout}>
-                <Text>Logout</Text>
+            </View>
+            <View style={{flexDirection: 'row'}}>
+              <TouchableOpacity onPress={remove} style={styles.deleteButton}>
+                <Text style={styles.deleteText}>Delete account</Text>
               </TouchableOpacity>
             </View>
           </View>
         </View>
       </ScrollView>
-      <View style={styles.bottom}>
-        <View style={{flexDirection: 'row'}}>
-          <TouchableOpacity
-            onPress={edit}
-            style={[
-              styles.saveButton,
-              !validForm ? {backgroundColor: '#AAA'} : {},
-            ]}>
-            <Text style={styles.saveText}>Save</Text>
-          </TouchableOpacity>
-        </View>
-        <View style={{flexDirection: 'row'}}>
-          <TouchableOpacity onPress={remove} style={styles.deleteButton}>
-            <Text style={styles.deleteText}>Delete account</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
     </View>
   );
 };

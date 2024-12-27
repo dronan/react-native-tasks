@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   Platform,
   Alert,
+  Dimensions,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import commonStyles from '../commonStyles';
@@ -32,7 +33,9 @@ const initialState = {
   showAddTask: false,
   visibleTasks: [],
   tasks: [],
+  isLandscape: false,
 };
+
 export default class TaskList extends Component {
   state = {
     ...initialState,
@@ -60,6 +63,23 @@ export default class TaskList extends Component {
       this.filterTasks,
     );
     this.loadTasks();
+    this.handleOrientationChange();
+    this.unsubscribe = Dimensions.addEventListener(
+      'change',
+      this.handleOrientationChange,
+    );
+  };
+
+  componentWillUnmount() {
+    if (this.unsubscribe) {
+      this.unsubscribe.remove();
+    }
+  }
+
+  handleOrientationChange = () => {
+    const {width, height} = Dimensions.get('window');
+    const isLandscape = width > height;
+    this.setState({isLandscape});
   };
 
   toggleAddTask = () => {
@@ -153,6 +173,7 @@ export default class TaskList extends Component {
 
   render() {
     const today = moment().locale('en-US').format('ddd, D MMMM');
+    const {isLandscape} = this.state;
 
     return (
       <View style={styles.container}>
@@ -161,7 +182,9 @@ export default class TaskList extends Component {
           onCancel={this.toggleAddTask}
           onSave={this.addTask}
         />
-        <ImageBackground source={this.getImages()} style={styles.background}>
+        <ImageBackground
+          source={this.getImages()}
+          style={isLandscape ? styles.backgroundH : styles.backgroundV}>
           <View style={styles.iconBar}>
             <TouchableOpacity
               onPress={() => this.props.navigation.openDrawer()}>
@@ -179,12 +202,13 @@ export default class TaskList extends Component {
               />
             </TouchableOpacity>
           </View>
-          <View style={styles.titleBar}>
+
+          <View style={isLandscape ? styles.titleBarH : styles.titleBarV}>
             <Text style={styles.title}>{this.props.route.name}</Text>
             <Text style={styles.subtitle}>{today}</Text>
           </View>
         </ImageBackground>
-        <View style={styles.taskList}>
+        <View style={isLandscape ? styles.taskListH : styles.taskListV}>
           <FlatList
             data={this.state.visibleTasks}
             keyExtractor={item => `${item.id}`}
@@ -213,13 +237,23 @@ const styles = StyleSheet.create({
   container: {
     flex: 1, // Fill the entire screen
   },
-  background: {
-    flex: 3, // 30% of the screen
+  backgroundH: {
+    flex: 5, // 50% of the screen
   },
-  taskList: {
+  backgroundV: {
+    flex: 2, // 30% of the screen
+  },
+  taskListH: {
+    flex: 6, // 60% of the screen
+  },
+  taskListV: {
     flex: 7, // 70% of the screen
   },
-  titleBar: {
+  titleBarH: {
+    flex: 1,
+    justifyContent: 'flex-end',
+  },
+  titleBarV: {
     flex: 1,
     justifyContent: 'flex-end',
   },
