@@ -6,7 +6,7 @@ import {
   TouchableWithoutFeedback,
   TouchableOpacity,
 } from 'react-native';
-import Icon from 'react-native-vector-icons/FontAwesome';
+import Icon from '@react-native-vector-icons/fontawesome';
 import commonStyles from '../commonStyles';
 import moment from 'moment';
 import ReanimatedSwipeable from 'react-native-gesture-handler/ReanimatedSwipeable';

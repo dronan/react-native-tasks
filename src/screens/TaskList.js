@@ -19,7 +19,7 @@ import {server, showError} from '../common';
 
 import Task from '../components/Task';
 
-import Icon from 'react-native-vector-icons/FontAwesome';
+import Icon from '@react-native-vector-icons/fontawesome';
 
 import AddTask from './AddTask';
 

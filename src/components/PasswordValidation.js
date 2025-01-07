@@ -1,6 +1,6 @@
 import React, {useEffect} from 'react';
 import {View, Text, StyleSheet} from 'react-native';
-import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import Icon from '@react-native-vector-icons/fontawesome';
 
 const PasswordValidation = ({
   password,
@@ -48,7 +48,7 @@ const PasswordValidation = ({
     <View style={styles.container}>
       {validations.map((item, index) => (
         <View key={index} style={styles.validationItem}>
-          <FontAwesome
+          <Icon
             name={item.condition ? 'check-circle' : 'circle-thin'}
             size={20}
             color={item.condition ? 'green' : 'gray'}

@@ -16,7 +16,7 @@ import {server, showError, showSuccess} from '../common';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 
-import Icon from 'react-native-vector-icons/FontAwesome';
+import Icon from '@react-native-vector-icons/fontawesome';
 import PasswordValidation from '../components/PasswordValidation';
 import Avatar from '../components/Avatar';
 import commonStyles from '../commonStyles';

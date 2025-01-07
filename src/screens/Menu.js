@@ -8,7 +8,7 @@ import {useRoute} from '@react-navigation/native';
 import commonStyles from '../commonStyles';
 import Avatar from '../components/Avatar';
 
-import Icon from 'react-native-vector-icons/FontAwesome';
+import Icon from '@react-native-vector-icons/fontawesome';
 import {server} from '../common';
 
 export default props => {
