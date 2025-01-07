@@ -9,7 +9,7 @@ import {
   ScrollView,
   Platform,
 } from 'react-native';
-import {launchImageLibrary} from 'react-native-image-picker';
+import {launchImageLibrary, launchCamera} from 'react-native-image-picker';
 import {useRoute} from '@react-navigation/native';
 import {server, showError, showSuccess} from '../common';
 
@@ -20,6 +20,10 @@ import Icon from '@react-native-vector-icons/fontawesome';
 import PasswordValidation from '../components/PasswordValidation';
 import Avatar from '../components/Avatar';
 import commonStyles from '../commonStyles';
+import {
+  requestCameraPermission,
+  requestGalleryPermission,
+} from '../permissions';
 
 export default props => {
   const route = useRoute();
@@ -74,6 +78,80 @@ export default props => {
       setAvatar(null);
       showError('Unspected error removing avatar');
     }
+  };
+
+  const handleChooseOption = async () => {
+    const hasCameraPermission = await requestCameraPermission();
+    const hasGalleryPermission = await requestGalleryPermission();
+
+    if (!hasCameraPermission && !hasGalleryPermission) {
+      Alert.alert(
+        'Permission required',
+        'You need to grant camera or gallery permission to upload an avatar',
+      );
+      return;
+    }
+
+    if (Platform.OS === 'ios') {
+      ActionSheetIOS.showActionSheetWithOptions(
+        {
+          options: ['Cancel', 'Open Camera', 'Open Gallery'],
+          cancelButtonIndex: 0,
+        },
+        buttonIndex => {
+          if (buttonIndex === 1) {
+            openCamera();
+          } else if (buttonIndex === 2) {
+            openGallery();
+          }
+        },
+      );
+    } else {
+      Alert.alert(
+        'Select an option',
+        'What do you want to do?',
+        [
+          {text: 'Cancel', style: 'cancel'},
+          {text: 'Open Camera', onPress: () => openCamera()},
+          {text: 'Open Gallery', onPress: () => openGallery()},
+        ],
+        {cancelable: true},
+      );
+    }
+  };
+
+  const openCamera = () => {
+    const options = {
+      mediaType: 'photo',
+    };
+    launchCamera(options, response => {
+      if (response.didCancel) {
+        console.log('Usuário cancelou a captura de imagem');
+      } else if (response.errorMessage) {
+        console.error('Erro na captura de imagem: ', response.errorMessage);
+      } else {
+        const source = {uri: response.assets[0].uri};
+        setAvatar(source);
+        uploadAvatar(response.assets[0]);
+      }
+    });
+  };
+
+  const openGallery = () => {
+    const options = {
+      mediaType: 'photo',
+    };
+    launchImageLibrary(options, response => {
+      if (response.didCancel) {
+        console.log('Usuário cancelou a seleção de imagem');
+      } else if (response.errorMessage) {
+        console.error('Erro na seleção de imagem: ', response.errorMessage);
+      } else {
+        const source = {uri: response.assets[0].uri};
+        setAvatar(source);
+        uploadAvatar(response.assets[0]);
+      }
+    });
   };
 
   const handleChoosePhoto = () => {
@@ -255,7 +333,7 @@ export default props => {
                 </View>
               )}
 
-              <TouchableOpacity onPress={handleChoosePhoto}>
+              <TouchableOpacity onPress={handleChooseOption}>
                 <Icon name="upload" size={20} style={styles.iconShowPass} />
               </TouchableOpacity>
             </View>
